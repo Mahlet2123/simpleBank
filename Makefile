@@ -17,7 +17,7 @@ migratedown1:
 sqlc:
 	sqlc generate
 test:
-	go test -v -cover ./...
+	go test -v -cover -short ./... 
 server:
 	go run main.go
 mock:
@@ -25,7 +25,7 @@ mock:
 compose:
 	docker compose up
 createmigration:
-	migrate create -ext sql -dir db/migration -seq $(ARG)
+	migrate create -ext sql -dir db/migration -seq $(name)
 proto:
 	rm -f pb/*.go
 	rm -f doc/swagger/*.swagger.json
@@ -39,6 +39,8 @@ proto:
 evans:
 	evans --host localhost --port 9090 -r repl	
 redis:
-	docker run --name redis -p 6379:6379 -d redis:7-alpine	
+	docker run --name redis -p 6379:6379 -d redis:7-alpine
+db_schema:
+	dbml2sql --postgres -o doc/schema.sql doc/db.dbml	
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 compose proto evans redis
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc test server mock migratedown1 migrateup1 compose proto evans redis db_schema
